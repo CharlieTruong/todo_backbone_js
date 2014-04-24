@@ -77,3 +77,23 @@ describe('LoginView', function(){
     });
   });
 });
+
+describe("AppRouter", function() {
+  var router;
+
+  beforeEach(function() {
+    router = new AppRouter();
+    try {
+      Backbone.history.start({silent:true, pushState:true});
+    } catch(e) {}
+     router.navigate("elsewhere");
+  });
+
+  describe("/", function(){
+    it('creates a LoginView', function(){
+      var spy = spyOn(window, 'LoginView');
+      router.navigate("/", true);
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+});

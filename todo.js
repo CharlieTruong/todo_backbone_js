@@ -1,7 +1,3 @@
-Session = Backbone.Model.extend({
-  url: 'http://recruiting­api.nextcapital.com/users/sign_in'
-});
-
 LoginView = Backbone.View.extend({
   id: 'login_view',
 
