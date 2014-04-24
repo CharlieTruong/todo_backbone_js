@@ -10,10 +10,7 @@ LoginView = Backbone.View.extend({
   initialize: function(container){
     this.$container = container;
     this.render();
-  },
-
-  events: {
-    'click #login_button': 'login'
+    this.overrideSubmit();
   },
 
   render: function(){
@@ -22,7 +19,7 @@ LoginView = Backbone.View.extend({
     return this;
   },     
 
-  login: function(){
+  overrideSubmit: function(){
     var self = this;
 
     $(this.el).find('form').submit(function(e){
