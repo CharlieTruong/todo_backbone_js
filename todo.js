@@ -89,7 +89,7 @@ var AppRouter = Backbone.Router.extend({
     var loginView = new LoginView($('#container'));
   }
 
-  getUserTodos: function(){
+  getUserTodos: function(id){
     if(sessionStorage.user_id === undefined || sessionStorage.user_id != id){
       this.navigate('');
     }
