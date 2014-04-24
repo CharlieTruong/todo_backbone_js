@@ -78,3 +78,32 @@ LoginView = Backbone.View.extend({
 });
 
 
+var AppRouter = Backbone.Router.extend({
+
+  routes: {
+    "": "login",
+    "/users/:id/todos": "getUserTodos"
+  },
+  
+  login: function() {
+    var loginView = new LoginView($('#container'));
+  }
+
+  getUserTodos: function(){
+    if(sessionStorage.user_id === undefined || sessionStorage.user_id != id){
+      this.navigate('');
+    }
+    else{
+      var todoList = new TodoList(id);
+      var todoListView = new TodoListView({
+           collection: todoList
+      });
+      todoList.fetch(); 
+    }
+  }
+});
+
+$(document).ready(function(){
+  var app = new AppRouter();
+  Backbone.history.start();
+});
