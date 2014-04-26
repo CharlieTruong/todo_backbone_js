@@ -56,7 +56,7 @@ LoginView = Backbone.View.extend({
 
     $.ajax({
       type: 'POST',
-      url: 'http://recruiting­api.nextcapital.com/users/sign_in',
+      url: 'http://recruiting­-api.nextcapital.com/users/sign_in',
       data: data,
       dataType: 'json'
     }).done(self.handleResponse);
@@ -68,9 +68,16 @@ LoginView = Backbone.View.extend({
     }
     else{
       sessionStorage.user_id = response.id;
-      sessionStorage.api_token = response.api_token;
+      this.setToken(response.api_token);
       window.location.href = '#/users/' + response.id + '/todos';
     }
+  },
+
+  setToken: function(token){
+    $.ajaxSend(function(event, request) {
+        request.setRequestHeader("api_token", token);
+      }
+    );
   }
 });
 
@@ -97,6 +104,100 @@ var AppRouter = Backbone.Router.extend({
       });
       todoList.fetch(); 
     }
+  }
+});
+
+var Todo = Backbone.Model.extend({
+  defaults: {
+    'is_complete': false
+  },
+
+  urlRoot: function(){
+    return 'http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/' + sessionStorage.user_id + '/todos/'
+  },
+
+  toJSON: function() {
+    return {api_token: sessionStorage.api_token, todo: _.clone( this.attributes ) }
+  }
+});
+
+var TodoView = Backbone.View.extend({
+  tagName: 'li',
+  template: _.template("<div><input type='checkbox' name='is_complete'><%-todo.description%></div>"),
+  
+  initialize: function(){
+    this.render();
+    this.listenTo(this.model, 'change', this.render);
+  },
+
+  events: {
+    'click input[type=checkbox]':'updateComplete'
+  },
+
+  render: function(){
+    this.$el.html(this.template(this.model.toJSON() ));
+    this.$el.find('input[type=checkbox]').attr('checked', this.model.get('is_complete'));
+    return this;
+  },
+
+  updateComplete: function(){
+    this.model.get('is_complete') ? this.model.set({is_complete: false}) : this.model.set({is_complete: true})
+    this.$el.addClass('complete');
+    this.model.save();
+  }
+});
+
+var TodoList = Backbone.Collection.extend({
+  model: Todo,
+  url: function(){
+    return 'http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/' + sessionStorage.user_id + '/todos'
+  }
+});
+
+var TodoListView = Backbone.View.extend({
+  tagName: 'ul',
+
+  template: _.template("<li><form id='todo_form'>"
+                        +"<input type='text' placeholder='New Todo' name='description'/>"
+                        +"<input type='Submit' id='todo_button' value='Add Todo'/>"
+                      +"</form></li>",{}),
+
+  initialize: function(){
+    this.$el.append(this.template);
+    $('#container').append(this.el);
+    var self = this;
+    this.collection.fetch({data: {api_token: sessionStorage.api_token}, success: function(){self.render();}});
+  },
+
+  events: {
+    "submit form" : "submitNewTodo"
+  },
+
+  render: function(){
+    var self = this;
+    self.collection.each(function(model){
+      var view = new TodoView({model: model});
+      self.$el.append(view.el);
+    });
+  }, 
+
+  submitNewTodo: function(e){
+    e.preventDefault();
+    var newTodo = this.$el.find('input[name=description]').val();
+    var self = this;
+    if(newTodo != ''){
+      this.collection.create({description: newTodo}, {success: function(response){self.addTodoView(response);}});
+    }
+    else{
+      alert('New todo cannot be blank.');
+    }
+  },
+
+  addTodoView: function(response){
+    var todo = new Todo(response);
+    var todoView = new TodoView({model: todo});
+    this.$el.append(todoView.render().el);  
+    this.$el.find('input[name=description]').val('');  
   }
 });
 
