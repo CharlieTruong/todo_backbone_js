@@ -155,16 +155,16 @@ var TodoList = Backbone.Collection.extend({
 });
 
 var TodoListView = Backbone.View.extend({
-  tagName: 'ul',
 
-  template: _.template("<li><form id='todo_form'>"
+  template: _.template("<form id='todo_form'>"
                         +"<input type='text' placeholder='New Todo' name='description'/>"
                         +"<input type='Submit' id='todo_button' value='Add Todo'/>"
-                      +"</form></li>",{}),
+                      +"</form><ul></ul>",{}),
 
   initialize: function(){
     this.$el.append(this.template);
     $('#container').append(this.el);
+    this.$el.find('ul').sortable();
     var self = this;
     this.collection.fetch({data: {api_token: sessionStorage.api_token}, success: function(){self.render();}});
   },
@@ -200,7 +200,7 @@ var TodoListView = Backbone.View.extend({
 
   addTodoView: function(model){
     var todoView = new TodoView({model: model});
-    this.$el.append(todoView.render().el);  
+    this.$el.find('ul').append(todoView.render().el);  
     this.$el.find('input[name=description]').val('');  
   }
 });
