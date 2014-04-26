@@ -4,16 +4,10 @@ function setUpHTMLFixture() {
 
 describe('LoginView', function(){
   var loginView;
-  var server;
 
   beforeEach(function(){
     setUpHTMLFixture();
     loginView = new LoginView($('#container'));
-    server = sinon.fakeServer.create();
-  });
-
-  afterEach(function() {
-    server.restore();
   });
 
   describe('el', function(){
@@ -44,8 +38,11 @@ describe('LoginView', function(){
     });
 
     describe('success', function(){
+      var server;
+
       beforeEach(function(){
-        server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting­-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
+        server = sinon.fakeServer.create();
+        server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
           '{"api_token":"123","email":"user@gmail.com", "id": "1"}']);
         $(loginView.el).find('input[type=email]').val('user@gmail.com');
         $(loginView.el).find('input[type=password]').val('password');
@@ -70,10 +67,11 @@ describe('LoginView', function(){
 
     describe('failure', function(){
       it('raises an alert', function(){
-        server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting­-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
+        server = sinon.fakeServer.create();
+        server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
           '{"message": "error"}']);
         var spy = spyOn(window,'alert');
-        $(loginView.el).find('input[type=text]').val('user@gmail.com');
+        $(loginView.el).find('input[type=email]').val('user@gmail.com');
         $(loginView.el).find('input[type=password]').val('badPassword');
         $('#login_view input[type=submit]').trigger('click'); 
         server.respond();
@@ -84,25 +82,52 @@ describe('LoginView', function(){
   });
 });
 
-// describe("AppRouter", function() {
-//   var router;
+describe('LogoutView', function(){
+  var logoutView;
 
-//   beforeEach(function() {
-//     router = new AppRouter();
-//     try {
-//       Backbone.history.start();
-//     } catch(e) {}
-//     window.location.href = '#elsewhere';
-//   });
+  beforeEach(function(){
+    setUpHTMLFixture();
+    logoutView = new LogoutView($('#container'));
+  });
 
-//   describe("/", function(){
-//     it('creates a LoginView', function(){
-//       var loginSpy = spyOn(window, 'LoginView');
-//       window.location.href = '#';
-//       expect(loginSpy).toHaveBeenCalled();
-//     });
-//   });
-// });
+  it('contains a button', function(){
+    expect(logoutView.$el.find('button').length).toEqual(1);
+  });
+
+  it('appends the view to a given container on initialize', function(){
+    expect($('#container').find('button').length).toEqual(1);
+  })
+
+  describe('logout button click', function(){
+    var server;
+
+    beforeEach(function(){
+      server = sinon.fakeServer.create();
+      server.respondWith("DELETE", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_out", [200, {"Content-Type": "application/json"},
+        ""]);
+      localStorage.user_id = 1;
+      localStorage.api_token=123;
+    });
+
+    afterEach(function(){
+      server.restore();
+    });
+
+    it('clears the localStorage', function(){
+      logoutView.$el.find('#logout_button').trigger('click');
+      server.respond();
+      expect(localStorage.user_id).toEqual(undefined);
+      expect(localStorage.api_token).toEqual(undefined);
+    });
+
+    it('redirects the user to the root page', function(){
+      window.location.href = '#elsewhere';
+      logoutView.$el.find('#logout_button').trigger('click');
+      server.respond();
+      expect(window.location.href.split('#')[1]).toEqual('')
+    });
+  });
+});
 
 describe('Todo', function(){
   var todo;
@@ -112,6 +137,10 @@ describe('Todo', function(){
     todo.set({id: 1});
     localStorage.user_id = 1;
     localStorage.api_token = '123';
+  });
+
+  afterEach(function(){
+    localStorage.clear();
   });
 
   it('is_complete is false by default', function(){
@@ -156,6 +185,10 @@ describe('TodoView', function(){
       $('#container').append(todoView.el);
     });
 
+    afterEach(function(){
+      localStorage.clear();
+    });
+
     it('reflects whether the todo is complete', function(){
       todo.set({is_complete: true});
       expect(todoView.$el.find('input[type=checkbox]').attr('checked')).toEqual('checked');
@@ -186,6 +219,10 @@ describe('TodoList', function(){
     todoList = new TodoList();
   });
 
+  afterEach(function(){
+    localStorage.clear();
+  });
+
   it('is a collection for todo model', function(){
     todoList.add({description: 'test'});
     expect(Todo.prototype.isPrototypeOf(todoList.models[0])).toEqual(true);
@@ -199,6 +236,7 @@ describe('TodoList', function(){
 
 describe('TodoListView', function(){
   var todoListView;
+  var server;
 
   beforeEach(function(){
     setUpHTMLFixture();
@@ -215,6 +253,7 @@ describe('TodoListView', function(){
 
   afterEach(function(){
     server.restore();
+    localStorage.clear();
   });
 
   it('fetches and adds user\'s todos to the view', function(){
@@ -222,7 +261,10 @@ describe('TodoListView', function(){
   });
 
   describe('add todo form', function(){
+    var server;
+
     beforeEach(function(){
+      server = sinon.fakeServer.create();
       server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/1/todos", [200, {"Content-Type": "application/json"},
         '{"id": 3, "description": "todo test create", "is_complete": false}']);
     });
@@ -259,3 +301,24 @@ describe('TodoListView', function(){
     });  
   })
 });
+
+
+// describe("AppRouter", function() {
+//   var router;
+
+//   beforeEach(function() {
+//     router = new AppRouter();
+//     try {
+//       Backbone.history.start();
+//     } catch(e) {}
+//     window.location.href = '#elsewhere';
+//   });
+
+//   describe("/", function(){
+//     it('creates a LoginView', function(){
+//       var loginSpy = spyOn(window, 'LoginView');
+//       window.location.href = '#';
+//       expect(loginSpy).toHaveBeenCalled();
+//     });
+//   });
+// });
