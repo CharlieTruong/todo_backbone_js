@@ -176,26 +176,30 @@ var TodoListView = Backbone.View.extend({
   render: function(){
     var self = this;
     self.collection.each(function(model){
-      var view = new TodoView({model: model});
-      self.$el.append(view.el);
+      self.addTodoView(model);
     });
   }, 
 
   submitNewTodo: function(e){
     e.preventDefault();
-    var newTodo = this.$el.find('input[name=description]').val();
     var self = this;
+    var newTodo = self.$el.find('input[name=description]').val();
     if(newTodo != ''){
-      this.collection.create({description: newTodo}, {success: function(response){self.addTodoView(response);}});
+      self.collection.create({description: newTodo}, {success: function(){self.addNewTodo();}});
     }
     else{
       alert('New todo cannot be blank.');
     }
   },
 
-  addTodoView: function(response){
-    var todo = new Todo(response);
-    var todoView = new TodoView({model: todo});
+  addNewTodo: function(response){
+    var lastIndex = this.collection.models.length - 1;
+    var lastModel = this.collection.models[lastIndex];
+    this.addTodoView(lastModel);
+  },
+
+  addTodoView: function(model){
+    var todoView = new TodoView({model: model});
     this.$el.append(todoView.render().el);  
     this.$el.find('input[name=description]').val('');  
   }
