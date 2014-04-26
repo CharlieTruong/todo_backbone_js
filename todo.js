@@ -82,7 +82,7 @@ var AppRouter = Backbone.Router.extend({
   },
 
   getUserTodos: function(id){
-    if(sessionStorage.user_id === undefined || sessionStorage.user_id != id){
+    if(localStorage.user_id === undefined || localStorage.user_id != id){
       this.navigate('');
     }
     else{
@@ -101,11 +101,11 @@ var Todo = Backbone.Model.extend({
   },
 
   urlRoot: function(){
-    return 'http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/' + sessionStorage.user_id + '/todos/'
+    return 'http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/' + localStorage.user_id + '/todos/'
   },
 
   toJSON: function() {
-    return {api_token: sessionStorage.api_token, todo: _.clone( this.attributes ) }
+    return {api_token: localStorage.api_token, todo: _.clone( this.attributes ) }
   }
 });
 
@@ -138,7 +138,7 @@ var TodoView = Backbone.View.extend({
 var TodoList = Backbone.Collection.extend({
   model: Todo,
   url: function(){
-    return 'http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/' + sessionStorage.user_id + '/todos'
+    return 'http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/' + localStorage.user_id + '/todos'
   }
 });
 
@@ -154,7 +154,7 @@ var TodoListView = Backbone.View.extend({
     $('#container').append(this.el);
     this.$el.find('ul').sortable();
     var self = this;
-    this.collection.fetch({data: {api_token: sessionStorage.api_token}, success: function(){self.render();}});
+    this.collection.fetch({data: {api_token: localStorage.api_token}, success: function(){self.render();}});
   },
 
   events: {

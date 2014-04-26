@@ -110,8 +110,8 @@ describe('Todo', function(){
   beforeEach(function(){
     todo = new Todo({description: 'test todo'});
     todo.set({id: 1});
-    sessionStorage.user_id = 1;
-    sessionStorage.api_token = '123';
+    localStorage.user_id = 1;
+    localStorage.api_token = '123';
   });
 
   it('is_complete is false by default', function(){
@@ -150,7 +150,7 @@ describe('TodoView', function(){
     var saveSpy;
     
     beforeEach(function(){
-      sessionStorage.user_id = 1;
+      localStorage.user_id = 1;
       saveSpy = spyOn(todo, 'save');
       todo.set({id: 1, is_complete: false});
       $('#container').append(todoView.el);
@@ -192,7 +192,7 @@ describe('TodoList', function(){
   });
 
   it('has the correct url', function(){
-    sessionStorage.user_id = 1;
+    localStorage.user_id = 1;
     expect(todoList.url()).toEqual('http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/1/todos')
   });
 });
@@ -205,7 +205,7 @@ describe('TodoListView', function(){
     TodoView = Backbone.View.extend({el: '<li class="model"></li>'});
     todoList = new Backbone.Collection();
     todoList.url = function(){return "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/1/todos"};
-    sessionStorage.api_token = 123;
+    localStorage.api_token = 123;
     server = sinon.fakeServer.create();
     server.respondWith("GET", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/1/todos?api_token=123", [200, {"Content-Type": "application/json"},
       '[{"id": 1, "description": "todo", "is_complete": false}, {"id": 2, "description": "todo", "is_complete": true}]']);
