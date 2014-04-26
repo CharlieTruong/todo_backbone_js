@@ -104,7 +104,7 @@ var AppRouter = Backbone.Router.extend({
 
   routes: {
     "": "login",
-    "/users/:id/todos": "getUserTodos"
+    "users/:id/todos": "getUserTodos"
   },
   
   login: function() {
@@ -112,15 +112,13 @@ var AppRouter = Backbone.Router.extend({
   },
 
   getUserTodos: function(id){
+    console.log('test');
     if(localStorage.user_id === undefined || localStorage.user_id != id){
       this.navigate('');
     }
     else{
-      var todoList = new TodoList(id);
-      var todoListView = new TodoListView({
-           collection: todoList
-      });
-      todoList.fetch(); 
+      var todoList = new TodoList();
+      var todoListView = new TodoListView({collection: todoList});
     }
   }
 });
