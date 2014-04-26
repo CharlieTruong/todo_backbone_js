@@ -17,8 +17,8 @@ describe('LoginView', function(){
   });
 
   describe('el', function(){
-    it("contains a text input field", function(){
-      expect($(loginView.el).find('input[type=text]').length).toEqual(1);
+    it("contains an email input field", function(){
+      expect($(loginView.el).find('input[type=email]').length).toEqual(1);
     });
 
     it("contains a password input field", function(){
@@ -45,26 +45,32 @@ describe('LoginView', function(){
 
     describe('success', function(){
       beforeEach(function(){
-        server.respondWith("POST", "http://recruiting­-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
+        server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting­-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
           '{"api_token":"123","email":"user@gmail.com", "id": "1"}']);
-        $(loginView.el).find('input[type=text]').val('user@gmail.com');
+        $(loginView.el).find('input[type=email]').val('user@gmail.com');
         $(loginView.el).find('input[type=password]').val('password');
         $('#login_view input[type=submit]').trigger('click'); 
         server.respond();
+      });
+
+      afterEach(function(){
+        server.restore();
+        localStorage.clear();
       });
 
       it('redirects to the user\'s todo list', function(){
         expect(window.location.href.split('#')[1]).toEqual('/users/1/todos')
       });
 
-      it('sets the browser sessionStorage with the user id', function(){
-        expect(sessionStorage.user_id).toEqual('1');
+      it('saves user_id and api_token to localStorage', function(){
+        expect(localStorage.user_id).toEqual('1');
+        expect(localStorage.api_token).toEqual('123');
       });
     }); 
 
     describe('failure', function(){
       it('raises an alert', function(){
-        server.respondWith("POST", "http://recruiting­-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
+        server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting­-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
           '{"message": "error"}']);
         var spy = spyOn(window,'alert');
         $(loginView.el).find('input[type=text]').val('user@gmail.com');
@@ -72,6 +78,7 @@ describe('LoginView', function(){
         $('#login_view input[type=submit]').trigger('click'); 
         server.respond();
         expect(spy).toHaveBeenCalled();
+        server.restore();
       });
     });
   });

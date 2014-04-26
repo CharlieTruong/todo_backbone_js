@@ -2,7 +2,7 @@ LoginView = Backbone.View.extend({
   id: 'login_view',
 
   template: _.template("<form id='login_form'>"
-                        +"<input type='text' placeholder='email' name='email'/>"
+                        +"<input type='email' placeholder='email' name='email'/>"
                         +"<input type='password' placeholder='password'name='password'/>"
                         +"<input type='Submit' id='login_button' value='Login'/>"
                       +"</form>",{}),
@@ -10,7 +10,10 @@ LoginView = Backbone.View.extend({
   initialize: function(container){
     this.$container = container;
     this.render();
-    this.overrideSubmit();
+  },
+
+  events: {
+    "submit #login_form" : "login"
   },
 
   render: function(){
@@ -19,28 +22,21 @@ LoginView = Backbone.View.extend({
     return this;
   },     
 
-  overrideSubmit: function(){
-    var self = this;
-
-    $(this.el).find('form').submit(function(e){
-      e.preventDefault();
-      data = self.convertFormDataToJSON();
-      if(self.formComplete(data)){
-        self.submitForm(data);
-      }
-      else{
-        alert('You must fill out all fields.');
-      }     
-    });
+  login: function(e){
+    e.preventDefault();
+    data = this.getInput();
+    if(this.formComplete(data)){
+      this.submitForm(data);
+    }
+    else{
+      alert('You must fill out all fields.');
+    }     
   },
 
-  convertFormDataToJSON: function (){
-      var array = $(this.el).find('form').serializeArray();
-      var json = {};
-      jQuery.each(array, function() {
-          json[this.name] = this.value || '';
-      });
-      return json;
+  getInput: function(){
+    var email = this.$el.find('input[name=email]').val();
+    var password = this.$el.find('input[name=password]').val();
+    return {email: email, password: password};
   },
 
   formComplete: function(data){
@@ -53,10 +49,9 @@ LoginView = Backbone.View.extend({
 
   submitForm: function(data){
     var self = this;
-
     $.ajax({
       type: 'POST',
-      url: 'http://recruiting­-api.nextcapital.com/users/sign_in',
+      url: 'http://quiet-bayou-3531.herokuapp.com/http://recruiting­-api.nextcapital.com/users/sign_in',
       data: data,
       dataType: 'json'
     }).done(self.handleResponse);
@@ -67,17 +62,10 @@ LoginView = Backbone.View.extend({
       alert(response.message);
     }
     else{
-      sessionStorage.user_id = response.id;
-      this.setToken(response.api_token);
+      localStorage.user_id = response.id;
+      localStorage.api_token = response.api_token;
       window.location.href = '#/users/' + response.id + '/todos';
     }
-  },
-
-  setToken: function(token){
-    $.ajaxSend(function(event, request) {
-        request.setRequestHeader("api_token", token);
-      }
-    );
   }
 });
 
@@ -170,7 +158,7 @@ var TodoListView = Backbone.View.extend({
   },
 
   events: {
-    "submit form" : "submitNewTodo"
+    "submit #todo_form" : "submitNewTodo"
   },
 
   render: function(){
@@ -204,6 +192,8 @@ var TodoListView = Backbone.View.extend({
     this.$el.find('input[name=description]').val('');  
   }
 });
+
+
 
 $(document).ready(function(){
   var app = new AppRouter();
