@@ -103,22 +103,39 @@ var LogoutView = Backbone.View.extend({
 var AppRouter = Backbone.Router.extend({
 
   routes: {
-    "": "login",
-    "users/:id/todos": "getUserTodos"
+    "users/:id/todos": "getUserTodos",
+    "": "login"
   },
   
   login: function() {
-    var loginView = new LoginView($('#container'));
+    if(localStorage.user_id){
+     window.location.href = '#/users/' + localStorage.user_id + '/todos'; 
+    }
+    else{
+      this.removeCurrentView();
+      var loginView = new LoginView($('#container'));
+      this.currentViews = [loginView];
+    }
   },
 
   getUserTodos: function(id){
-    console.log('test');
+    this.removeCurrentView();
     if(localStorage.user_id === undefined || localStorage.user_id != id){
-      this.navigate('');
+      window.location.href = '#';
     }
     else{
+      var logoutView = new LogoutView($('#container'));
       var todoList = new TodoList();
       var todoListView = new TodoListView({collection: todoList});
+      this.currentViews = [logoutView, todoListView];
+    }
+  },
+
+  removeCurrentView: function(){
+    if(this.currentViews && this.currentViews.length > 0){
+      for(index in this.currentViews){
+        this.currentViews[index].remove();
+      }
     }
   }
 });
