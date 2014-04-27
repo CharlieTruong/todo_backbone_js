@@ -7,8 +7,9 @@ var LoginView = Backbone.View.extend({
                         +"<input type='Submit' id='login_button' value='Login'/>"
                       +"</form>",{}),
   
-  initialize: function(container){
+  initialize: function(container, model){
     this.$container = container;
+    this.model = model;
     this.render();
   },
 
@@ -24,9 +25,10 @@ var LoginView = Backbone.View.extend({
 
   login: function(e){
     e.preventDefault();
+    var self = this;
     data = this.getInput();
     if(this.formComplete(data)){
-      this.submitForm(data);
+      this.model.save(data, {success: self.redirectTodos, error: self.raiseAlert})
     }
     else{
       alert('You must fill out all fields.');
@@ -47,22 +49,11 @@ var LoginView = Backbone.View.extend({
     return status;
   },
 
-  submitForm: function(data){
-    var self = this;
-    $.ajax({
-      type: 'POST',
-      url: "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in",
-      data: data,
-      dataType: 'json'
-    }).fail(self.raiseAlert)
-      .done(self.redirectTodos);
-  },
-
-  raiseAlert: function(response){
+  raiseAlert: function(model, response){
     alert(response.responseJSON.message);
   },
 
-  redirectTodos: function(response){
+  redirectTodos: function(model, response){
     localStorage.user_id = response.id;
     localStorage.api_token = response.api_token;
     window.location.href = '#/users/' + response.id + '/todos';
@@ -72,8 +63,9 @@ var LoginView = Backbone.View.extend({
 var LogoutView = Backbone.View.extend({
   template: _.template("<button id='logout_button'>Logout</button>"),
 
-  initialize: function(container){
+  initialize: function(container, model){
     this.$container = container;
+    this.model = model;
     this.render();
   },
 
@@ -89,12 +81,10 @@ var LogoutView = Backbone.View.extend({
 
   logout: function(){
     var self = this;
-    $.ajax({
-      type: 'DELETE',
-      url: "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_out",
-      data: {api_token: localStorage.api_token, user_id: localStorage.user_id},
-      dataType: 'json'
-    }).always(function(){window.location.href = '#'});
-    localStorage.clear();
+    this.model.destroy({data: {api_token: localStorage.api_token, user_id: localStorage.user_id}, processData: true})
+      .always(function(){
+        localStorage.clear();
+        window.location.href = '#';  
+      });
   }
 });
