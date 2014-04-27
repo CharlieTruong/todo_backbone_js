@@ -226,11 +226,6 @@ describe('TodoView', function(){
       localStorage.clear();
     });
 
-    it('reflects whether the todo is complete', function(){
-      todo.set({is_complete: true});
-      expect(todoView.$el.find('input[type=checkbox]').attr('checked')).toEqual('checked');
-    });
-
     it('clicking the checkbox updates the todo is_complete status', function(){
       todoView.$el.find('input[type=checkbox]').trigger('click');
       expect(todoView.model.get('is_complete')).toEqual(true);
