@@ -54,18 +54,18 @@ var LoginView = Backbone.View.extend({
       url: "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in",
       data: data,
       dataType: 'json'
-    }).done(self.handleResponse);
+    }).fail(self.raiseAlert)
+      .done(self.redirectTodos);
   },
 
-  handleResponse: function(response){
-    if(response.message){
-      alert(response.message);
-    }
-    else{
-      localStorage.user_id = response.id;
-      localStorage.api_token = response.api_token;
-      window.location.href = '#/users/' + response.id + '/todos';
-    }
+  raiseAlert: function(response){
+    alert(response.responseJSON.message);
+  },
+
+  redirectTodos: function(response){
+    localStorage.user_id = response.id;
+    localStorage.api_token = response.api_token;
+    window.location.href = '#/users/' + response.id + '/todos';
   }
 });
 

@@ -68,7 +68,7 @@ describe('LoginView', function(){
     describe('failure', function(){
       it('raises an alert', function(){
         server = sinon.fakeServer.create();
-        server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
+        server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in", [400, {"Content-Type": "application/json"},
           '{"message": "error"}']);
         var spy = spyOn(window,'alert');
         loginView.$el.find('input[type=email]').val('user@gmail.com');
