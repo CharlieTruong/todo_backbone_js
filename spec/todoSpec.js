@@ -315,22 +315,42 @@ describe('TodoListView', function(){
 });
 
 
-// describe("AppRouter", function() {
-//   var router;
+describe("AppRouter", function() {
+  var app;
 
-//   beforeEach(function() {
-//     router = new AppRouter();
-//     try {
-//       Backbone.history.start();
-//     } catch(e) {}
-//     window.location.href = '#elsewhere';
-//   });
+  beforeEach(function() {
+    app = new AppRouter();
+    try {
+      Backbone.history.start();
+    } catch(e) {}
+    app.navigate('#elsewhere');
+  });
 
-//   describe("/", function(){
-//     it('creates a LoginView', function(){
-//       var loginSpy = spyOn(window, 'LoginView');
-//       window.location.href = '#';
-//       expect(loginSpy).toHaveBeenCalled();
-//     });
-//   });
-// });
+  describe("/", function(){
+    it('calls the login function', function(){
+      var spyLogin = spyOn(app, 'login').and.callThrough();
+      var updateHashSpy = spyOn(Backbone.history, '_updateHash').and.callFake(
+        function (loc, frag) {
+          expect(frag).toEqual('');
+          app.login();
+      });
+      app.navigate('', {trigger: true});
+      expect(updateHashSpy).toHaveBeenCalled();
+      expect(spyLogin).toHaveBeenCalled();
+    });
+  });
+
+  describe("/users/:id/todos", function(){
+    it('calls the getUserTodos function', function(){
+      var spyGetTodos = spyOn(app, 'getUserTodos').and.callThrough();
+      var updateHashSpy = spyOn(Backbone.history, '_updateHash').and.callFake(
+        function (loc, frag) {
+          expect(frag).toEqual('users/1/todos');
+          app.getUserTodos();
+      });
+      app.navigate('/users/1/todos', {trigger: true});
+      expect(updateHashSpy).toHaveBeenCalled();
+      expect(spyGetTodos).toHaveBeenCalled();
+    });
+  });
+});
