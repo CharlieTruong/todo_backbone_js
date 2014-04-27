@@ -1,3 +1,16 @@
+var Session = Backbone.Model.extend({
+  methodToURL: {
+    'create': "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in",
+    'delete': "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_out"
+  },
+
+  sync: function(method, model, options) {
+    options = options || {};
+    options.url = model.methodToURL[method.toLowerCase()];
+    return Backbone.sync.apply(this, arguments);
+  }
+});
+
 var Todo = Backbone.Model.extend({
   defaults: {
     'is_complete': false

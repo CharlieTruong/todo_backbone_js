@@ -15,7 +15,8 @@ var AppRouter = Backbone.Router.extend({
     }
     else{
       this.removeCurrentView();
-      var loginView = new LoginView(this.$container);
+      var session = new Session();
+      var loginView = new LoginView(this.$container, session);
       this.currentViews = [loginView];
     }
   },
@@ -26,7 +27,8 @@ var AppRouter = Backbone.Router.extend({
       window.location.href = '#';
     }
     else{
-      var logoutView = new LogoutView(this.$container);
+      var session = new Session({api_token: localStorage.api_token, user_id: localStorage.user_id, id: localStorage.user_id})
+      var logoutView = new LogoutView(this.$container, session);
       var todoList = new TodoList();
       var todoListView = new TodoListView({$container: this.$container, collection: todoList});
       this.currentViews = [logoutView, todoListView];

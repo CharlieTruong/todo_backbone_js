@@ -2,12 +2,47 @@ function setUpHTMLFixture() {
   setFixtures("<div id='container'></div>");
 }
 
+describe('Session', function(){
+  beforeEach(function(){
+    server = sinon.fakeServer.create();
+  });
+
+  afterEach(function(){
+    server.restore();
+  });
+
+  it('saves to the correct url', function(){
+    server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
+      '{"api_token":"123","email":"user@gmail.com", "id": "1"}']);
+    var callback = sinon.spy();
+    var session = new Session({email: 'user@gmail.com', password: 'password'});
+    session.bind('change', callback);
+    session.save();
+    server.respond();
+    expect(callback.called).toBeTruthy();
+  });
+
+  it('deletes a session to the correct url', function(){
+    server = sinon.fakeServer.create();
+    server.respondWith("DELETE", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_out", [200, {"Content-Type": "application/json"},
+      ""]);
+    var callback = sinon.spy();
+    var session = new Session({api_token: '123', user_id: 1, id: 1});
+    session.bind('destroy', callback);
+    session.destroy();
+    server.respond();
+    expect(callback.called).toBeTruthy();
+  });
+});
+
 describe('LoginView', function(){
   var loginView;
 
   beforeEach(function(){
     setUpHTMLFixture();
-    loginView = new LoginView($('#container'));
+    var session = new Backbone.Model();
+    session.url = function(){return "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in"}
+    loginView = new LoginView($('#container'), session);
   });
 
   describe('el', function(){
@@ -87,7 +122,9 @@ describe('LogoutView', function(){
 
   beforeEach(function(){
     setUpHTMLFixture();
-    logoutView = new LogoutView($('#container'));
+    var session = new Backbone.Model({id: 1});
+    session.url = function(){return "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_out"}
+    logoutView = new LogoutView($('#container'), session);
   });
 
   it('contains a button', function(){
