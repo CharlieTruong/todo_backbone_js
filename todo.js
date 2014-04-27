@@ -235,16 +235,15 @@ var TodoListView = Backbone.View.extend({
     var self = this;
     var newTodo = self.$el.find('input[name=description]').val();
     if(newTodo != ''){
-      self.collection.create({description: newTodo}, {success: function(){self.addNewTodo();}});
+      self.collection.create({description: newTodo}, {success: function(response){self.addNewTodo(response.id);}});
     }
     else{
       alert('New todo cannot be blank.');
     }
   },
 
-  addNewTodo: function(response){
-    var lastIndex = this.collection.models.length - 1;
-    var lastModel = this.collection.models[lastIndex];
+  addNewTodo: function(id){
+    var lastModel = this.collection.get(id);
     this.addTodoView(lastModel);
   },
 
