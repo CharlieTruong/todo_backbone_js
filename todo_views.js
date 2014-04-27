@@ -14,12 +14,13 @@ var TodoView = Backbone.View.extend({
   render: function(){
     this.$el.html(this.template(this.model.toJSON() ));
     this.$el.find('input[type=checkbox]').attr('checked', this.model.get('is_complete'));
+    if(this.model.get('is_complete')){this.$el.addClass('complete')}
     return this;
   },
 
   updateComplete: function(){
     this.model.get('is_complete') ? this.model.set({is_complete: false}) : this.model.set({is_complete: true})
-    this.$el.addClass('complete');
+    this.model.get('is_complete') ? this.$el.addClass('complete') : this.$el.removeClass('complete');
     this.model.save();
   }
 });
