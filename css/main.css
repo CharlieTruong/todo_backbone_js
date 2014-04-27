@@ -25,6 +25,11 @@ html, body{
 
 #logout_button{
   float: right;
+  background-color: #C4D18B;
+}
+
+input[type='submit']{
+  background-color: #C4D18B;
 }
 
 ul{
