@@ -1,0 +1,52 @@
+html, body{
+  background-color: #C4D18B;
+  height: 100%;
+}
+
+#container{
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #FFF5D1;
+  height: 100%;
+}
+
+#container>div{
+  width: 60%;
+  margin: 0 auto;
+}
+
+#login_form{
+  text-align: center;
+}
+
+#login_form input{
+  margin: 1%;
+}
+
+#logout_button{
+  float: right;
+}
+
+ul{
+  list-style-type: none;
+  padding: 0;
+}
+
+li div{
+  margin: 1% 0%;
+  padding: 1% 0%;
+  background-color: #C4D18B;
+  border-radius: 50px;
+  box-shadow: 10px 10px 5px #888888;
+}
+
+.complete{
+  text-decoration: line-through;
+}
+
+#header{
+  font-size: 50px;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 5%;
+}
