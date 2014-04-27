@@ -12,15 +12,15 @@ describe('LoginView', function(){
 
   describe('el', function(){
     it("contains an email input field", function(){
-      expect($(loginView.el).find('input[type=email]').length).toEqual(1);
+      expect(loginView.$el.find('input[type=email]').length).toEqual(1);
     });
 
     it("contains a password input field", function(){
-      expect($(loginView.el).find('input[type=password]').length).toEqual(1);
+      expect(loginView.$el.find('input[type=password]').length).toEqual(1);
     });
 
     it("contains a submit button", function(){
-      expect($(loginView.el).find('input[type=submit]').length).toEqual(1);
+      expect(loginView.$el.find('input[type=submit]').length).toEqual(1);
     });
   });
 
@@ -44,8 +44,8 @@ describe('LoginView', function(){
         server = sinon.fakeServer.create();
         server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
           '{"api_token":"123","email":"user@gmail.com", "id": "1"}']);
-        $(loginView.el).find('input[type=email]').val('user@gmail.com');
-        $(loginView.el).find('input[type=password]').val('password');
+        loginView.$el.find('input[type=email]').val('user@gmail.com');
+        loginView.$el.find('input[type=password]').val('password');
         $('#login_view input[type=submit]').trigger('click'); 
         server.respond();
       });
@@ -71,8 +71,8 @@ describe('LoginView', function(){
         server.respondWith("POST", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/sign_in", [200, {"Content-Type": "application/json"},
           '{"message": "error"}']);
         var spy = spyOn(window,'alert');
-        $(loginView.el).find('input[type=email]').val('user@gmail.com');
-        $(loginView.el).find('input[type=password]').val('badPassword');
+        loginView.$el.find('input[type=email]').val('user@gmail.com');
+        loginView.$el.find('input[type=password]').val('badPassword');
         $('#login_view input[type=submit]').trigger('click'); 
         server.respond();
         expect(spy).toHaveBeenCalled();
