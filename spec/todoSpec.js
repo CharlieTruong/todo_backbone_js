@@ -259,7 +259,7 @@ describe('TodoListView', function(){
     server = sinon.fakeServer.create();
     server.respondWith("GET", "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/1/todos?api_token=123", [200, {"Content-Type": "application/json"},
       '[{"id": 1, "description": "todo", "is_complete": false}, {"id": 2, "description": "todo", "is_complete": true}]']);
-    todoListView = new TodoListView({collection: todoList});
+    todoListView = new TodoListView({$container: $('#container'), collection: todoList});
     server.respond();
   });
 
@@ -290,7 +290,6 @@ describe('TodoListView', function(){
     });  
 
     it('posts a new todo to the server and appends it to the view', function(){
-      $('.container').append(todoListView.el);
       var spyTodoCreate = spyOn(todoList, 'create').and.callThrough();
       todoListView.$el.find('input[name=description]').val('todo test create');
       todoListView.$el.find('input[type=submit]').trigger('click'); 
@@ -319,7 +318,8 @@ describe("AppRouter", function() {
   var app;
 
   beforeEach(function() {
-    app = new AppRouter();
+    setUpHTMLFixture();
+    app = new AppRouter($('#container'));
     try {
       Backbone.history.start();
     } catch(e) {}
