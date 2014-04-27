@@ -232,6 +232,17 @@ describe('TodoList', function(){
     localStorage.user_id = 1;
     expect(todoList.url()).toEqual('http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/1/todos')
   });
+
+  describe('sort', function(){
+    it('sorts the todo models by description', function(){
+      todo1 = new Todo({description: 'B'});
+      todo2 = new Todo({description: 'a'});
+      todoList.add(todo1);
+      todoList.add(todo2);
+      todoList.sortByDescription();
+      expect(todoList.models).toEqual([todo2, todo1]);
+    });
+  }); 
 });
 
 describe('TodoListView', function(){
@@ -242,6 +253,7 @@ describe('TodoListView', function(){
     setUpHTMLFixture();
     TodoView = Backbone.View.extend({el: '<li class="model"></li>'});
     todoList = new Backbone.Collection();
+    todoList.sortByDescription = function(){return}
     todoList.url = function(){return "http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/1/todos"};
     localStorage.api_token = 123;
     server = sinon.fakeServer.create();

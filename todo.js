@@ -182,9 +182,25 @@ var TodoView = Backbone.View.extend({
 
 var TodoList = Backbone.Collection.extend({
   model: Todo,
+  
   url: function(){
     return 'http://quiet-bayou-3531.herokuapp.com/http://recruiting-api.nextcapital.com/users/' + localStorage.user_id + '/todos'
-  }
+  },
+
+  comparator: function(a, b) {
+    if(this.sort_key){
+      a = a.get(this.sort_key).toLowerCase();
+      b = b.get(this.sort_key).toLowerCase();
+      return a > b ?  1
+           : a < b ? -1
+           :          0;
+    }
+  }, 
+
+  sortByDescription: function() {
+      this.sort_key = 'description';
+      this.sort();
+  }      
 });
 
 var TodoListView = Backbone.View.extend({
@@ -208,6 +224,7 @@ var TodoListView = Backbone.View.extend({
 
   render: function(){
     var self = this;
+    self.collection.sortByDescription();
     self.collection.each(function(model){
       self.addTodoView(model);
     });
