@@ -38,7 +38,7 @@ var AppRouter = Backbone.Router.extend({
   removeCurrentView: function(){
     if(this.currentViews && this.currentViews.length > 0){
       for(index in this.currentViews){
-        this.currentViews[index].remove();
+        this.currentViews[index].close();
       }
     }
   }
