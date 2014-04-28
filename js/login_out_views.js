@@ -57,6 +57,10 @@ var LoginView = Backbone.View.extend({
     localStorage.user_id = response.id;
     localStorage.api_token = response.api_token;
     window.location.href = '#/users/' + response.id + '/todos';
+  },
+
+  close: function(){
+    this.remove();
   }
 });
 
@@ -86,5 +90,9 @@ var LogoutView = Backbone.View.extend({
         localStorage.clear();
         window.location.href = '#';  
       });
+  },
+
+  close: function(){
+    this.remove();
   }
 });

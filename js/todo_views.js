@@ -38,6 +38,7 @@ var TodoListView = Backbone.View.extend({
     this.$el.append(this.template);
     this.$container.append(this.el);
     this.$el.find('ul').sortable();
+    this.subViews = new Array();
     var self = this;
     this.collection.fetch({data: {api_token: localStorage.api_token}, success: function(){self.render();}});
   },
@@ -73,7 +74,15 @@ var TodoListView = Backbone.View.extend({
 
   addTodoView: function(model){
     var todoView = new TodoView({model: model});
+    this.subViews.push(todoView);
     this.$el.find('ul').append(todoView.render().el);  
     this.$el.find('input[name=description]').val('');  
+  },
+
+  close: function(){
+    for(index in this.subViews){
+      this.subViews[index].remove();
+    }
+    this.remove();
   }
 });
